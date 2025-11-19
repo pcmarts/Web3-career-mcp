@@ -9,8 +9,38 @@ This is a Model Context Protocol (MCP) server that wraps the [Web3.career API](h
     - Remote only
     - Limit number of results
     - Filter by country (e.g., 'united-states')
-    - Filter by tag/skill (e.g., 'react', 'rust')
+    - Filter by tag/skill (e.g., 'react', 'rust', 'marketing')
     - Toggle job descriptions
+
+## Usage Tips & Limitations
+
+- **Tags**: The `tag` filter expects a **single keyword** or slug.
+  - ✅ Good: "marketing", "react", "solidity", "design"
+  - ❌ Bad: "marketing jobs", "senior react developer", "web3 marketing"
+  - If you want to search for "marketing jobs", just use `tag: "marketing"`.
+
+- **Country**: Use country slugs (lowercase, hyphenated).
+  - ✅ Good: "united-states", "united-kingdom", "germany"
+  - ❌ Bad: "USA", "United Kingdom"
+
+## Available Tags
+
+Here is a list of common tags you can use to filter jobs. Remember to use the exact slug/keyword.
+
+### Roles & Levels
+`analyst`, `community manager`, `cto`, `customer support`, `data science`, `design`, `developer relations`, `devops`, `economy designer`, `entry level`, `executive`, `finance`, `founder`, `hr`, `intern`, `legal`, `marketing`, `moderator`, `operations`, `product manager`, `project manager`, `research`, `sales`
+
+### Engineering & Tech
+`backend`, `cryptography`, `front end`, `full stack`, `gaming`, `mobile`, `smart contract`, `security`
+
+### Languages & Frameworks
+`golang`, `java`, `javascript`, `node`, `python`, `react`, `ruby`, `rust`, `solidity`, `typescript`, `web3js`, `web3 py`
+
+### Blockchain & Ecosystems
+`bitcoin`, `blockchain`, `cosmos`, `ethereum`, `evm`, `layer 2`, `polkadot`, `polygon`, `solana`, `tezos`
+
+### Web3 Specific
+`ai`, `crypto`, `dao`, `defi`, `discord`, `erc`, `erc 20`, `ganache`, `hardhat`, `metaverse`, `nft`, `non tech`, `open source`, `openzeppelin`, `pay in crypto`, `refi`, `truffle`, `zero knowledge`
 
 ## Setup
 
@@ -72,4 +102,3 @@ To build the project in watch mode:
 ```bash
 npx tsc --watch
 ```
-

@@ -11,14 +11,42 @@ const server = new McpServer({
 const WEB3_CAREER_API_TOKEN = process.env.WEB3_CAREER_TOKEN || "99utwADPU3UL4NWtSDk2LPBHnQ7BaAeW";
 const BASE_URL = "https://web3.career/api/v1";
 
+const AVAILABLE_TAGS = [
+  "ai", "analyst", "backend", "bitcoin", "blockchain", "community-manager", 
+  "crypto", "cryptography", "cto", "customer-support", "dao", "data-science", 
+  "defi", "design", "developer-relations", "devops", "discord", "economy-designer", 
+  "entry-level", "erc", "erc-20", "evm", "front-end", "full-stack", "gaming", 
+  "ganache", "golang", "hardhat", "intern", "java", "javascript", "layer-2", 
+  "marketing", "mobile", "moderator", "nft", "node", "non-tech", "open-source", 
+  "openzeppelin", "pay-in-crypto", "product-manager", "project-manager", 
+  "react", "refi", "research", "ruby", "rust", "sales", "smart-contract", 
+  "solana", "solidity", "truffle", "web3-py", "web3js", "zero-knowledge"
+];
+
+server.tool(
+  "get_available_tags",
+  "Get the list of valid tags/skills for filtering jobs",
+  {},
+  async () => {
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(AVAILABLE_TAGS, null, 2),
+        },
+      ],
+    };
+  }
+);
+
 server.tool(
   "get_web3_jobs",
   "Get the latest web3 jobs from web3.career with optional filters",
   {
     remote: z.boolean().optional().describe("Show only remote jobs"),
     limit: z.number().min(1).max(100).optional().default(50).describe("Number of jobs to return (default 50, max 100)"),
-    country: z.string().optional().describe("Filter by country slug (e.g., 'united-states')"),
-    tag: z.string().optional().describe("Filter by tag/skill (e.g., 'react')"),
+    country: z.string().optional().describe("Filter by country slug (e.g., 'united-states'). Use slugs, not full names."),
+    tag: z.string().optional().describe("Filter by a SINGLE specific tag, skill, or category (e.g., 'marketing' for Marketing jobs, 'react' for React jobs). Use 'get_available_tags' to see all options."),
     show_description: z.boolean().optional().default(true).describe("Show job description (default true)"),
   } as any,
   async (args: any) => {
@@ -38,26 +66,34 @@ server.tool(
       
       const data = response.data;
       
-      if (!Array.isArray(data) || data.length < 3) {
+      if (!Array.isArray(data)) {
         return {
           content: [
             {
               type: "text" as const,
-              text: "Error: Unexpected API response format. Expected an array with at least 3 elements.",
+              text: "Error: Unexpected API response format. Response is not an array.",
             },
           ],
           isError: true,
         };
       }
 
-      const jobs = data[2];
+      // The API usually returns [string, string, jobsArray]. 
+      // We look for the first array element in the response.
+      let jobs = data.find((item: any) => Array.isArray(item));
 
-      if (!Array.isArray(jobs)) {
+      // Fallback: checks if the root array itself contains job objects (if API structure changed drastically)
+      if (!jobs && data.length > 0 && typeof data[0] === 'object' && data[0] !== null) {
+         jobs = data;
+      }
+
+      if (!jobs || !Array.isArray(jobs)) {
+         const preview = JSON.stringify(data).substring(0, 500);
          return {
           content: [
             {
               type: "text" as const,
-              text: "Error: Unexpected API response format. Index 2 is not an array of jobs.",
+              text: `Error: Unexpected API response format. Could not find jobs array. Response preview: ${preview}`,
             },
           ],
           isError: true,
