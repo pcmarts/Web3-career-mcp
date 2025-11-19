@@ -74,14 +74,14 @@ Add the following configuration to your MCP settings file (e.g., `~/Library/Appl
       "command": "node",
       "args": ["/path/to/web3-career-mcp/dist/index.js"],
       "env": {
-        "WEB3_CAREER_TOKEN": "99utwADPU3UL4NWtSDk2LPBHnQ7BaAeW"
+        "WEB3_CAREER_TOKEN": "your-api-token-here"
       }
     }
   }
 }
 ```
 
-**Note**: The server includes a default token, so setting `WEB3_CAREER_TOKEN` is optional but recommended if you have your own.
+**Note**: The `WEB3_CAREER_TOKEN` environment variable is **required**. You can obtain an API token from [web3.career](https://web3.career/web3-jobs-api). Do not commit your token to version control.
 
 ## Usage
 
