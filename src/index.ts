@@ -44,7 +44,7 @@ server.tool(
   "Get the latest web3 jobs from web3.career with optional filters",
   {
     remote: z.boolean().optional().describe("Show only remote jobs"),
-    limit: z.number().min(1).max(100).optional().default(50).describe("Number of jobs to return (default 50, max 100)"),
+    limit: z.number().min(1).max(100).optional().default(20).describe("Number of jobs to return (default 20, max 100)"),
     country: z.string().optional().describe("Filter by country slug (e.g., 'united-states'). Use slugs, not full names."),
     tag: z.string().optional().describe("Filter by a SINGLE specific tag, skill, or category (e.g., 'marketing' for Marketing jobs, 'react' for React jobs). Use 'get_available_tags' to see all options."),
     show_description: z.boolean().optional().default(true).describe("Show job description (default true)"),
@@ -100,11 +100,25 @@ server.tool(
         };
       }
 
+      // Post-process jobs to reduce response size
+      const processedJobs = jobs.map((job: any) => {
+        let description = job.description;
+        if (description) {
+           // Strip HTML tags and collapse whitespace
+           description = description.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+           // Truncate to 500 characters
+           if (description.length > 500) {
+             description = description.substring(0, 500) + "...";
+           }
+        }
+        return { ...job, description };
+      });
+
       return {
         content: [
           {
             type: "text" as const,
-            text: JSON.stringify(jobs, null, 2),
+            text: JSON.stringify(processedJobs, null, 2),
           },
         ],
       };
